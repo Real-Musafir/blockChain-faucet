@@ -2,15 +2,14 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 import "./Owned.sol";
+import "./Logger.sol";
 
 
-contract Faucet is Owned {
+contract Faucet is Owned, Logger {
     uint public numOfFunders;
 
     mapping(address=> bool) private funders;
     mapping(uint=> address) private lutFunders;
-
-    
     
 
     modifier limitWithdraw (uint withdrawAmount) {
@@ -21,10 +20,15 @@ contract Faucet is Owned {
         _;
     }
     
+    
     //this is a special function
     //it's called when you make a tx that doesn't specify
     // function name to call
     receive() external payable {}
+
+    function emitLog() public override pure returns(bytes32){
+        return "Hello World";
+    }
 
     function addFunds() external payable {
        
