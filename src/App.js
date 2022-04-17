@@ -16,7 +16,7 @@ function App() {
       if (window.ethereum) {
         provider = window.ethereum;
         try {
-          await provider.enable(); //connect to the metamask
+          await provider.request({ method: "eth_requestAccounts" }); //connect to the metamask
         } catch {
           console.error("User denied accounts access!");
         }
