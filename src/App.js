@@ -1,20 +1,38 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Web3 from "web3";
 
 function App() {
+  const [web3Api, setWeb3Api] = useState({
+    provider: null,
+    web3: null,
+  });
   useEffect(() => {
+    let provider = null;
     const loadProvider = async () => {
-      //with metamas we hava an access to window.ethereum & to window.web3
-      // metamask injecxts a global API into website
-      // this API allows websites to request user, ,account, read data to blockchain,
-      // sign messages and transactions
+      if (window.ethereum) {
+        provider = window.ethereum;
+        try {
+          await provider.enable(); //connect to the metamask
+        } catch {
+          console.error("User denied accounts access!");
+        }
+      } else if (window.web3) {
+        provider = window.web3.currentProvider;
+      } else if (!process.env.production) {
+        provider = new Web3.providers.HttpProvider("http://localhost:7545");
+      }
 
-      console.log(window.web3);
-      console.log(window.ethereum);
+      setWeb3Api({
+        web3: new Web3(provider),
+        provider,
+      });
     };
     loadProvider();
   }, []);
+
+  console.log(web3Api.web3);
+
   return (
     <>
       <div className="faucet-wrapper">
@@ -22,17 +40,7 @@ function App() {
           <div className="balance-view is-size-2">
             Current Balance: <strong>10</strong> ETH
           </div>
-          <button
-            onClick={async () => {
-              const accounts = await window.ethereum.request({
-                method: "eth_requestAccounts",
-              });
-              console.log(accounts);
-            }}
-            className="btn mr-2"
-          >
-            Enable Ethereum
-          </button>
+
           <button className="btn mr-2 ">Donate</button>
           <button className="btn">Withdraw</button>
         </div>
