@@ -11,6 +11,8 @@ function App() {
     contract: null,
   });
 
+  const [ballance, setBallance] = useState(null);
+
   const [account, setAccount] = useState(null);
 
   useEffect(() => {
@@ -31,6 +33,15 @@ function App() {
     };
     loadProvider();
   }, []);
+
+  useEffect(() => {
+    const loadBalance = async () => {
+      const { contract, web3 } = web3Api;
+      const balance = await web3.eth.getBalance(contract.address);
+      setBallance(web3.utils.fromWei(balance, "ether"));
+    };
+    web3Api.contract && loadBalance();
+  }, [web3Api]);
 
   useEffect(() => {
     const getAcount = async () => {
@@ -63,7 +74,7 @@ function App() {
             )}
           </div>
           <div className="balance-view is-size-2 my-5">
-            Current Balance: <strong>10</strong> ETH
+            Current Balance: <strong>{ballance}</strong> ETH
           </div>
 
           <button className="button  is-link mr-2 ">Donate</button>
