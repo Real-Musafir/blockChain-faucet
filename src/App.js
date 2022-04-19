@@ -23,21 +23,14 @@ function App() {
     provider.on("accountsChanged", () => {
       window.location.reload();
     });
-
-    // provider._jsonRpcConnection.events.on("notification", (payload) => {
-    //   const { method } = payload;
-    //   if (method === "metamask_unlockStateChanged") {
-    //     setAccount(null);
-    //   }
-    // });
   };
 
   useEffect(() => {
     const loadProvider = async () => {
       let provider = await detectEthereumProvider();
-      const contract = await loadContract("Faucet", provider);
 
       if (provider) {
+        const contract = await loadContract("Faucet", provider);
         setAccountListener(provider);
         setWeb3Api({
           web3: new Web3(provider),
@@ -96,6 +89,15 @@ function App() {
 
             {account ? (
               <span> {account}</span>
+            ) : !web3Api.provider ? (
+              <>
+                <div className="notification is-warning is-small is-rounded">
+                  Wallet is not detected! {` `}
+                  <a traget="_blank" href="https://docs.metamask.io">
+                    Install Metamask
+                  </a>
+                </div>
+              </>
             ) : (
               <button
                 onClick={() =>
