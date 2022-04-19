@@ -19,13 +19,19 @@ function App() {
     reload(!shouldReload);
   }, [shouldReload]);
 
+  const setAccountListener = (provider) => {
+    provider.on("accountsChanged", (accounts) => {
+      setAccount(accounts[0]);
+    });
+  };
+
   useEffect(() => {
     const loadProvider = async () => {
       let provider = await detectEthereumProvider();
-
       const contract = await loadContract("Faucet", provider);
 
       if (provider) {
+        setAccountListener(provider);
         setWeb3Api({
           web3: new Web3(provider),
           provider,
